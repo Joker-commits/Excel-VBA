@@ -32,5 +32,18 @@ Function TextPart(text As String) As String
     Next i
 End Function
 
-
+Function NumberPart(text As String) As String
+    Dim i As Long
     
+    ' Loop through each character in the text
+    For i = 1 To Len(text)
+        ' Check if the character is a letter or special character
+        If IsNumeric(Mid(text, i, 1)) Then
+            ' Extract the number part
+            NumberPart = NumberPart & Mid(text, i, 1)
+        Else
+            ' Exit the loop when encountering a letter or special character
+            Exit For
+        End If
+    Next i
+End Function
