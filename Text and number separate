@@ -1,0 +1,36 @@
+Sub SeparateTextAndNumbers()
+    Dim lastRow As Long
+    Dim cell As Range
+    
+    ' Find the last row in column A
+    lastRow = Cells(Rows.Count, "A").End(xlUp).Row
+    
+    ' Loop through each cell in column A
+    For Each cell In Range("A1:A" & lastRow)
+        ' Separate text and numbers using built-in functions
+        If Application.WorksheetFunction.IsText(cell.Value) Then
+            cell.Offset(0, 1).Value = TextPart(cell.Value)
+        ElseIf Application.WorksheetFunction.IsNumber(cell.Value) Then
+            cell.Offset(0, 2).Value = NumberPart(cell.Value)
+        End If
+    Next cell
+End Sub
+
+Function TextPart(text As String) As String
+    Dim i As Long
+    
+    ' Loop through each character in the text
+    For i = 1 To Len(text)
+        ' Check if the character is a number or special character
+        If Not IsNumeric(Mid(text, i, 1)) Then
+            ' Extract the text part
+            TextPart = TextPart & Mid(text, i, 1)
+        Else
+            ' Exit the loop when encountering a number or special character
+            Exit For
+        End If
+    Next i
+End Function
+
+
+    
