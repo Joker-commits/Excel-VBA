@@ -1,0 +1,26 @@
+Function ColorXLookup(lookup_value As Variant, lookup_array As Range, return_array As Range, _
+                      Optional if_not_found As Variant = "Not Found") As Variant
+    Dim i As Long
+    Dim lookup_value As Variant
+    Dim lookup_range As Range
+    Dim result_range As Range
+    Dim cell As Range
+    Dim result As Variant
+    
+    ' Initialize result with the not found value
+    result = if_not_found
+    
+    ' Loop through the lookup array to find the match
+    For i = 1 To lookup_array.Cells.Count
+        If lookup_array.Cells(i).Value = lookup_value Then
+            result = return_array.Cells(i).Value
+            ' Copy the cell color
+            ColorXLookup = result
+            Application.Caller.Interior.Color = return_array.Cells(i).Interior.Color
+            Exit Function
+        End If
+    Next i
+    
+    ' Return the result if found, otherwise the if_not_found value
+    ColorXLookup = result
+End Function
