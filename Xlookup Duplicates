@@ -6,23 +6,17 @@ Function XLookupWithDuplicates(lookupValue As Variant, lookupRange As Range, ret
     ' Perform initial XLOOKUP
     lookupResult = Application.XLookup(lookupValue, lookupRange, returnRange)
     
-    ' Check for duplicates
-    If IsError(lookupResult) Then
-        ' Value not found, return error
-        XLookupWithDuplicates = lookupResult
+    ' Check for duplicates in the main column (lookup range)
+    duplicateCount = Application.CountIf(lookupRange, lookupValue)
+    
+    ' Find first occurrence
+    firstOccurrence = Application.Match(lookupValue, lookupRange, 0)
+    
+    ' Handle duplicates
+    If duplicateCount > 1 Then
+        XLookupWithDuplicates = "Duplicate found in cell " & lookupRange(firstOccurrence).Address
     Else
-        ' Find first occurrence
-        firstOccurrence = Application.Match(lookupValue, lookupRange, 0)
-        
-        ' Count duplicates
-        duplicateCount = Application.CountIf(lookupRange, lookupValue)
-        
-        ' Handle duplicates
-        If duplicateCount > 1 Then
-            XLookupWithDuplicates = "Duplicate found in cell " & lookupRange(firstOccurrence).Address
-        Else
-            ' No duplicates, return initial lookup result
-            XLookupWithDuplicates = lookupResult
-        End If
+        ' No duplicates, return initial lookup result
+        XLookupWithDuplicates = lookupResult
     End If
 End Function
