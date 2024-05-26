@@ -1,0 +1,53 @@
+Sub CombineEverySecondCell()
+    Dim ws As Worksheet
+    Dim sourceRange As Range
+    Dim outputColumn As Range
+    Dim cell1 As Range, cell2 As Range
+    Dim combinedText As String
+    Dim i As Long, outputRow As Long
+    
+    ' Specify the worksheet
+    Set ws = ThisWorkbook.Worksheets("Sheet1") ' Change "Sheet1" to your sheet name
+    
+    ' Ask for the source range
+    On Error Resume Next
+    Set sourceRange = Application.InputBox("Select the source range:", Type:=8)
+    On Error GoTo 0
+    
+    If sourceRange Is Nothing Then
+        MsgBox "No range selected. Exiting."
+        Exit Sub
+    End If
+    
+    ' Ask for the output column
+    On Error Resume Next
+    Set outputColumn = Application.InputBox("Select the output column:", Type:=8)
+    On Error GoTo 0
+    
+    If outputColumn Is Nothing Then
+        MsgBox "No output column selected. Exiting."
+        Exit Sub
+    End If
+    
+    ' Ensure the outputColumn is a single column
+    If outputColumn.Columns.Count > 1 Then
+        MsgBox "Please select a single column for the output. Exiting."
+        Exit Sub
+    End If
+    
+    ' Combine every second cell with its preceding cell
+    outputRow = 1
+    For i = 1 To sourceRange.Cells.Count Step 2
+        Set cell1 = sourceRange.Cells(i)
+        If i + 1 <= sourceRange.Cells.Count Then
+            Set cell2 = sourceRange.Cells(i + 1)
+            combinedText = cell1.Value & " " & cell2.Value
+        Else
+            combinedText = cell1.Value
+        End If
+        
+        ' Place the combined result in the output column
+        outputColumn.Cells(outputRow, 1).Value = combinedText
+        outputRow = outputRow + 1
+    Next i
+End Sub
