@@ -1,0 +1,28 @@
+Function XLookupWithDuplicates(lookupValue As Variant, lookupRange As Range, returnRange As Range) As Variant
+    Dim lookupResult As Variant
+    Dim firstOccurrence As Variant
+    Dim duplicateCount As Long
+    
+    ' Perform initial XLOOKUP
+    lookupResult = Application.XLookup(lookupValue, lookupRange, returnRange)
+    
+    ' Check for duplicates
+    If IsError(lookupResult) Then
+        ' Value not found, return error
+        XLookupWithDuplicates = lookupResult
+    Else
+        ' Find first occurrence
+        firstOccurrence = Application.Match(lookupValue, lookupRange, 0)
+        
+        ' Count duplicates
+        duplicateCount = Application.CountIf(lookupRange, lookupValue)
+        
+        ' Handle duplicates
+        If duplicateCount > 1 Then
+            XLookupWithDuplicates = "Duplicate " & (firstOccurrence - 1) + Application.WorksheetFunction.RandBetween(1, duplicateCount) & " found in cell " & lookupRange(firstOccurrence).Address
+        Else
+            ' No duplicates, return initial lookup result
+            XLookupWithDuplicates = lookupResult
+        End If
+    End If
+End Function
