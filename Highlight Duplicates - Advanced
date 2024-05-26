@@ -1,33 +1,60 @@
 Sub HighlightDuplicatesWithVBA()
     Dim ws As Worksheet
-    Dim rng As Range
-    Dim cell As Range
+    Dim rngA As Range, rngB As Range
+    Dim cellA As Range, cellB As Range
     
     ' Set the worksheet
     Set ws = ThisWorkbook.ActiveSheet ' Change to the desired worksheet if needed
     
-    ' Prompt the user to select the range for comparison
+    ' Prompt the user to select the range for Column A
     On Error Resume Next
-    Set rng = Application.InputBox("Select the range for comparison", Type:=8)
+    Set rngA = Application.InputBox("Select the range for Column A", Type:=8)
     On Error GoTo 0
     
-    ' Check if a range is selected
-    If Not rng Is Nothing Then
-        ' Clear existing conditional formatting
-        rng.FormatConditions.Delete
-        
-        ' Loop through each cell in the selected range
-        For Each cell In rng
-            ' Check if the cell is not empty
-            If Not IsEmpty(cell) Then
-                ' Check if the value occurs more than once in the selected range
-                If Application.CountIf(rng, cell.Value) > 1 Then
-                    ' Apply conditional formatting to highlight the cell with light green color
-                    cell.Interior.Color = RGB(144, 238, 144) ' Light green
+    ' Check if a range is selected for Column A
+    If rngA Is Nothing Then
+        MsgBox "No range selected for Column A.", vbExclamation
+        Exit Sub
+    End If
+    
+    ' Prompt the user to select the range for Column B
+    On Error Resume Next
+    Set rngB = Application.InputBox("Select the range for Column B", Type:=8)
+    On Error GoTo 0
+    
+    ' Check if a range is selected for Column B
+    If rngB Is Nothing Then
+        MsgBox "No range selected for Column B.", vbExclamation
+        Exit Sub
+    End If
+    
+    ' Clear existing conditional formatting in Column A
+    rngA.FormatConditions.Delete
+    
+    ' Loop through each cell in Column A
+    For Each cellA In rngA
+        ' Check if the cell in Column A is not empty
+        If Not IsEmpty(cellA) Then
+            ' Initialize a variable to track duplicates
+            Dim foundDuplicate As Boolean
+            foundDuplicate = False
+            
+            ' Loop through each cell in Column B
+            For Each cellB In rngB
+                ' Check if the value in Column A matches any value in Column B
+                If cellA.Value = cellB.Value Then
+                    foundDuplicate = True
+                    Exit For ' Exit the inner loop once a match is found
+                End If
+            Next cellB
+            
+            ' Check if the value in Column A is unique within Column A
+            If WorksheetFunction.CountIf(rngA, cellA.Value) = 1 Then
+                ' Apply conditional formatting to highlight duplicates in Column A that exist in Column B
+                If foundDuplicate Then
+                    cellA.Interior.Color = RGB(144, 238, 144) ' Light green
                 End If
             End If
-        Next cell
-    Else
-        MsgBox "No range selected.", vbExclamation
-    End If
+        End If
+    Next cellA
 End Sub
