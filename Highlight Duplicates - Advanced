@@ -2,26 +2,37 @@ Sub HighlightDuplicatesWithVBA()
     Dim ws As Worksheet
     Dim rngA As Range, rngB As Range
     Dim cell As Range
+    Dim selectedRange As Range
     
     ' Set the worksheet
-    Set ws = ThisWorkbook.Sheets("Sheet1") ' Change "Sheet1" to your sheet name
+    Set ws = ThisWorkbook.ActiveSheet ' Change to the desired worksheet if needed
     
-    ' Define the range for Column A and Column B
-    Set rngA = ws.Range("A1:A" & ws.Cells(ws.Rows.Count, "A").End(xlUp).Row)
-    Set rngB = ws.Range("B1:B" & ws.Cells(ws.Rows.Count, "B").End(xlUp).Row)
+    ' Prompt the user to select the range for comparison
+    On Error Resume Next
+    Set selectedRange = Application.InputBox("Select the range for comparison", Type:=8)
+    On Error GoTo 0
     
-    ' Clear existing conditional formatting
-    rngA.FormatConditions.Delete
-    
-    ' Loop through each cell in Column A
-    For Each cell In rngA
-        ' Check if the value in Column A exists in Column B
-        If Not IsError(Application.Match(cell.Value, rngB, 0)) Then
-            ' Check if the value doesn't repeat in the same column
-            If WorksheetFunction.CountIf(rngA, cell.Value) = 1 Or WorksheetFunction.CountIf(rngB, cell.Value) = 1 Then
-                ' Apply conditional formatting to highlight the cell with light green color
-                cell.Interior.Color = RGB(144, 238, 144) ' Light green
+    ' Check if a range is selected
+    If Not selectedRange Is Nothing Then
+        ' Define the range for Column A and Column B based on the selected range
+        Set rngA = ws.Range(selectedRange.Address)
+        Set rngB = ws.Range(selectedRange.Offset(0, 1).Address)
+        
+        ' Clear existing conditional formatting
+        rngA.FormatConditions.Delete
+        
+        ' Loop through each cell in Column A
+        For Each cell In rngA
+            ' Check if the value in Column A exists in Column B
+            If Not IsError(Application.Match(cell.Value, rngB, 0)) Then
+                ' Check if the value doesn't repeat in the same column
+                If WorksheetFunction.CountIf(rngA, cell.Value) = 1 Or WorksheetFunction.CountIf(rngB, cell.Value) = 1 Then
+                    ' Apply conditional formatting to highlight the cell with light green color
+                    cell.Interior.Color = RGB(144, 238, 144) ' Light green
+                End If
             End If
-        End If
-    Next cell
+        Next cell
+    Else
+        MsgBox "No range selected.", vbExclamation
+    End If
 End Sub
