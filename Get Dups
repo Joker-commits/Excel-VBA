@@ -1,0 +1,31 @@
+Function GetDuplicateInfo(rngA As Range, rngB As Range) As Variant
+    Dim dict As Object
+    Set dict = CreateObject("Scripting.Dictionary")
+    
+    Dim result() As Variant
+    Dim cell As Range
+    Dim value As Variant
+    Dim i As Long
+    
+    For Each cell In rngA
+        value = cell.Value
+        If Not IsEmpty(value) Then
+            If dict.exists(value) Then
+                dict(value) = dict(value) & "|" & cell.Address
+            Else
+                dict.Add value, cell.Address
+            End If
+        End If
+    Next cell
+    
+    ReDim result(1 To dict.Count, 1 To 2)
+    
+    i = 1
+    For Each value In dict.keys
+        result(i, 1) = value
+        result(i, 2) = Split(dict(value), "|")
+        i = i + 1
+    Next value
+    
+    GetDuplicateInfo = result
+End Function
