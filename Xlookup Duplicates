@@ -13,21 +13,21 @@ Function XLookupWithDuplicates(lookupValue As Variant, lookupRange As Range, ret
     
     ' Check if duplicates exist
     If duplicateCount > 1 Then
-        ' Collect matching cells
-        Set matchingCells = lookupRange.Columns(1).SpecialCells(xlCellTypeConstants, xlTextValues)
-        ' Loop through matching cells to find duplicates
-        For Each cell In matchingCells
+        ' Initialize a range to collect matching cells
+        Set matchingCells = Nothing
+        ' Loop through each cell in the lookup value column
+        For Each cell In lookupRange.Columns(1).Cells
             If cell.Value = lookupValue Then
-                ' Append cell address to the string
-                If XLookupWithDuplicates <> "" Then
-                    XLookupWithDuplicates = XLookupWithDuplicates & ", " & cell.Address
+                ' Add the cell to the range
+                If matchingCells Is Nothing Then
+                    Set matchingCells = cell
                 Else
-                    XLookupWithDuplicates = cell.Address
+                    Set matchingCells = Union(matchingCells, cell)
                 End If
             End If
         Next cell
         ' Return message with cell addresses
-        XLookupWithDuplicates = "Duplicates found in cells " & XLookupWithDuplicates
+        XLookupWithDuplicates = "Duplicates found in cells " & matchingCells.Address
     Else
         ' No duplicates, perform initial XLOOKUP
         lookupResult = Application.XLookup(lookupValue, lookupRange.Columns(1), returnRange)
