@@ -14,19 +14,13 @@ Sub HighlightDuplicatesWithVBA()
     
     ' Check if a range is selected
     If Not selectedRange Is Nothing Then
-        ' Check if the selected range contains multiple columns
-        If selectedRange.Columns.Count > 1 Then
-            MsgBox "Please select a single column range.", vbExclamation
-            Exit Sub
-        End If
-        
-        ' Find the last row in the selected column
+        ' Find the last row in the selected range
         Dim lastRow As Long
-        lastRow = ws.Cells(ws.Rows.Count, selectedRange.Column).End(xlUp).Row
+        lastRow = selectedRange.Rows(selectedRange.Rows.Count).Row
         
         ' Define the range for Column A and Column B based on the selected range and last row
-        Set rngA = ws.Range(ws.Cells(1, selectedRange.Column), ws.Cells(lastRow, selectedRange.Column))
-        Set rngB = ws.Range(ws.Cells(1, selectedRange.Column + 1), ws.Cells(lastRow, selectedRange.Column + 1))
+        Set rngA = ws.Range(ws.Cells(selectedRange.Row, selectedRange.Column), ws.Cells(lastRow, selectedRange.Column))
+        Set rngB = ws.Range(ws.Cells(selectedRange.Row, selectedRange.Column + 1), ws.Cells(lastRow, selectedRange.Column + 1))
         
         ' Check if both ranges are not empty
         If Not rngA Is Nothing And Not rngB Is Nothing Then
