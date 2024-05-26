@@ -1,12 +1,9 @@
 Function XLookupWithDuplicates(lookupValue As Variant, lookupRange As Range, returnRange As Range) As Variant
     Dim lookupResult As Variant
     Dim cell As Range
-    Dim matchingCells As String
+    Dim matchingCells As Range
     Dim firstOccurrence As Variant
     Dim duplicateCount As Long
-    
-    ' Initialize variables
-    matchingCells = ""
     
     ' Check for duplicates in the lookup value column
     duplicateCount = Application.CountIf(lookupRange.Columns(1), lookupValue)
@@ -14,23 +11,26 @@ Function XLookupWithDuplicates(lookupValue As Variant, lookupRange As Range, ret
     ' Find first occurrence
     firstOccurrence = Application.Match(lookupValue, lookupRange.Columns(1), 0)
     
-    ' Loop through each cell in the lookup value column
-    For Each cell In lookupRange.Columns(1).Cells
-        ' If the cell value matches the lookup value, append its address to the string
-        If cell.Value = lookupValue Then
-            matchingCells = matchingCells & cell.Address & ", "
-        End If
-    Next cell
-    
-    ' Remove trailing comma and space
-    matchingCells = Left(matchingCells, Len(matchingCells) - 2)
-    
-    ' Perform initial XLOOKUP
+    ' Check if duplicates exist
     If duplicateCount > 1 Then
-        XLookupWithDuplicates = "Duplicates found in cells " & matchingCells
+        ' Collect matching cells
+        Set matchingCells = lookupRange.Columns(1).SpecialCells(xlCellTypeConstants, xlTextValues)
+        ' Loop through matching cells to find duplicates
+        For Each cell In matchingCells
+            If cell.Value = lookupValue Then
+                ' Append cell address to the string
+                If XLookupWithDuplicates <> "" Then
+                    XLookupWithDuplicates = XLookupWithDuplicates & ", " & cell.Address
+                Else
+                    XLookupWithDuplicates = cell.Address
+                End If
+            End If
+        Next cell
+        ' Return message with cell addresses
+        XLookupWithDuplicates = "Duplicates found in cells " & XLookupWithDuplicates
     Else
         ' No duplicates, perform initial XLOOKUP
-        lookupResult = Application.XLookup(lookupValue, lookupRange, returnRange)
+        lookupResult = Application.XLookup(lookupValue, lookupRange.Columns(1), returnRange)
         XLookupWithDuplicates = lookupResult
     End If
 End Function
