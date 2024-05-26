@@ -3,6 +3,7 @@ Sub HighlightDuplicatesWithVBA()
     Dim rngA As Range, rngB As Range
     Dim cell As Range
     Dim selectedRange As Range
+    Dim countA As Long, countB As Long
     
     ' Set the worksheet
     Set ws = ThisWorkbook.ActiveSheet ' Change to the desired worksheet if needed
@@ -23,17 +24,16 @@ Sub HighlightDuplicatesWithVBA()
             ' Clear existing conditional formatting
             rngA.FormatConditions.Delete
             
-            ' Loop through each cell in Column A
+            ' Loop through each cell in Column A to count occurrences
             For Each cell In rngA
-                ' Check if the cell is not empty
                 If Not IsEmpty(cell) Then
-                    ' Check if the value in Column A exists in Column B
-                    If Not IsError(Application.Match(cell.Value, rngB, 0)) Then
-                        ' Check if the value doesn't repeat in the same column
-                        If WorksheetFunction.CountIf(rngA, cell.Value) = 1 Or WorksheetFunction.CountIf(rngB, cell.Value) = 1 Then
-                            ' Apply conditional formatting to highlight the cell with light green color
-                            cell.Interior.Color = RGB(144, 238, 144) ' Light green
-                        End If
+                    countA = Application.WorksheetFunction.CountIf(rngA, cell.Value)
+                    countB = Application.WorksheetFunction.CountIf(rngB, cell.Value)
+                    
+                    ' Check if the value doesn't repeat in the same column
+                    If countA = 1 Or countB = 1 Then
+                        ' Apply conditional formatting to highlight the cell with light green color
+                        cell.Interior.Color = RGB(144, 238, 144) ' Light green
                     End If
                 End If
             Next cell
