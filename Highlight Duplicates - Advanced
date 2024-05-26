@@ -14,13 +14,9 @@ Sub HighlightDuplicatesWithVBA()
     
     ' Check if a range is selected
     If Not selectedRange Is Nothing Then
-        ' Find the last row in the selected range
-        Dim lastRow As Long
-        lastRow = selectedRange.Rows(selectedRange.Rows.Count).Row
-        
-        ' Define the range for Column A and Column B based on the selected range and last row
-        Set rngA = ws.Range(ws.Cells(selectedRange.Row, selectedRange.Column), ws.Cells(lastRow, selectedRange.Column))
-        Set rngB = ws.Range(ws.Cells(selectedRange.Row, selectedRange.Column + 1), ws.Cells(lastRow, selectedRange.Column + 1))
+        ' Define the range for Column A and Column B based on the selected range
+        Set rngA = selectedRange.Columns(1)
+        Set rngB = selectedRange.Offset(0, 1).Columns(1)
         
         ' Check if both ranges are not empty
         If Not rngA Is Nothing And Not rngB Is Nothing Then
