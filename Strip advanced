@@ -1,0 +1,60 @@
+Sub RemoveNumbersFromStrings()
+    Dim ws As Worksheet
+    Dim sourceRange As Range
+    Dim outputColumn As Range
+    Dim cell As Range
+    Dim cleanedText As String
+    Dim outputRow As Long
+    Dim userResponse As VbMsgBoxResult
+    
+    ' Display a greeting message to the user
+    MsgBox "Enjoy the show!!", vbInformation, "Greeting"
+    
+    ' Ask for the source range
+    On Error Resume Next
+    Set sourceRange = Application.InputBox("Select the source range:", Type:=8)
+    On Error GoTo 0
+
+    If sourceRange Is Nothing Then
+        MsgBox "No range selected. Exiting."
+        Exit Sub
+    End If
+
+    ' Ask for the output column
+    On Error Resume Next
+    Set outputColumn = Application.InputBox("Select the output column:", Type:=8)
+    On Error GoTo 0
+
+    If outputColumn Is Nothing Then
+        MsgBox "No output column selected. Exiting."
+        Exit Sub
+    End If
+
+    ' Ensure the outputColumn is a single column
+    If outputColumn.Columns.Count > 1 Then
+        MsgBox "Please select a single column for the output. Exiting."
+        Exit Sub
+    End If
+
+    ' Remove numbers from each cell in the source range and place the result in the output column
+    outputRow = 1
+    For Each cell In sourceRange
+        cleanedText = RemoveNumbers(cell.Value)
+        outputColumn.Cells(outputRow, 1).Value = cleanedText
+        outputRow = outputRow + 1
+    Next cell
+End Sub
+
+Function RemoveNumbers(text As String) As String
+    Dim i As Integer
+    Dim result As String
+    result = ""
+    
+    For i = 1 To Len(text)
+        If Not IsNumeric(Mid(text, i, 1)) Then
+            result = result & Mid(text, i, 1)
+        End If
+    Next i
+    
+    RemoveNumbers = result
+End Function
