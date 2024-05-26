@@ -1,0 +1,30 @@
+Dim selectedRange As Range ' Define a module-level variable to store the selected range
+
+Sub SelectDataRange()
+    ' Prompt the user to select the data range
+    On Error Resume Next
+    Set selectedRange = Application.InputBox("Select the data range", Type:=8)
+    On Error GoTo 0
+    
+    ' Check if a range was selected
+    If Not selectedRange Is Nothing Then
+        ' Highlight duplicates in the selected range
+        HighlightDuplicates selectedRange
+    End If
+End Sub
+
+Sub HighlightDuplicates(rng As Range)
+    Dim cell As Range, dict As Object
+    
+    ' Initialize dictionary object
+    Set dict = CreateObject("Scripting.Dictionary")
+    
+    ' Loop through each cell in the range
+    For Each cell In rng
+        If Not dict.exists(cell.Value) Then
+            dict.Add cell.Value, 1
+        Else
+            cell.Interior.Color = RGB(255, 0, 0) ' Change color as needed
+        End If
+    Next cell
+End Sub
