@@ -3,6 +3,7 @@ Sub HighlightDuplicatesWithVBA()
     Dim rngA As Range, rngB As Range
     Dim cell As Range
     Dim selectedRange As Range
+    Dim lastRow As Long
     
     ' Set the worksheet
     Set ws = ThisWorkbook.ActiveSheet ' Change to the desired worksheet if needed
@@ -14,9 +15,12 @@ Sub HighlightDuplicatesWithVBA()
     
     ' Check if a range is selected
     If Not selectedRange Is Nothing Then
-        ' Define the range for Column A and Column B based on the selected range
-        Set rngA = ws.Range(selectedRange.Address)
-        Set rngB = ws.Range(selectedRange.Offset(0, 1).Address)
+        ' Find the last row in the selected range
+        lastRow = ws.Cells(ws.Rows.Count, selectedRange.Column).End(xlUp).Row
+        
+        ' Define the range for Column A and Column B based on the selected range and last row
+        Set rngA = ws.Range(ws.Cells(1, selectedRange.Column), ws.Cells(lastRow, selectedRange.Column))
+        Set rngB = ws.Range(ws.Cells(1, selectedRange.Column + 1), ws.Cells(lastRow, selectedRange.Column + 1))
         
         ' Check if both ranges are not empty
         If Not rngA Is Nothing And Not rngB Is Nothing Then
@@ -25,6 +29,22 @@ Sub HighlightDuplicatesWithVBA()
             
             ' Loop through each cell in Column A
             For Each cell In rngA
-                ' Check if the value in Column A exists in Column B
-                If Not IsError(Application.Match(cell.Value, rngB, 0)) Then
-                    ' Check if the⬤
+                ' Check if the cell is not empty
+                If Not IsEmpty(cell) Then
+                    ' Check if the value in Column A exists in Column B
+                    If Not IsError(Application.Match(cell.Value, rngB, 0)) Then
+                        ' Check if the value doesn't repeat in the same column
+                        If WorksheetFunction.CountIf(rngA, cell.Value) = 1 Or WorksheetFunction.CountIf(rngB, cell.Value) = 1 Then
+                            ' Apply conditional formatting to highlight the cell with light green color
+                            cell.Interior.Color = RGB(144, 238, 144) ' Light green
+                        End If
+                    End If
+                End If
+            Next cell
+        Else
+            MsgBox "Invalid range selection. Please select a range that includes at least two adjacent columns.", vbExclamation
+        End If
+    Else
+        MsgBox "No range selected.", vbExclamation
+    End If
+End Sub
