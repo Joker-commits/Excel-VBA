@@ -2,6 +2,7 @@ Sub HighlightDuplicatesWithVBA()
     Dim ws As Worksheet
     Dim rngA As Range, rngB As Range
     Dim cellA As Range, cellB As Range
+    Dim dictB As Object
     
     ' Set the worksheet
     Set ws = ThisWorkbook.ActiveSheet ' Change to the desired worksheet if needed
@@ -28,6 +29,14 @@ Sub HighlightDuplicatesWithVBA()
         Exit Sub
     End If
     
+    ' Create a dictionary to store unique values in Column B
+    Set dictB = CreateObject("Scripting.Dictionary")
+    For Each cellB In rngB
+        If Not IsEmpty(cellB) And Not dictB.Exists(cellB.Value) Then
+            dictB.Add cellB.Value, Nothing
+        End If
+    Next cellB
+    
     ' Clear existing conditional formatting in Column A
     rngA.FormatConditions.Delete
     
@@ -35,25 +44,10 @@ Sub HighlightDuplicatesWithVBA()
     For Each cellA In rngA
         ' Check if the cell in Column A is not empty
         If Not IsEmpty(cellA) Then
-            ' Initialize a variable to track duplicates
-            Dim foundDuplicate As Boolean
-            foundDuplicate = False
-            
-            ' Loop through each cell in Column B
-            For Each cellB In rngB
-                ' Check if the value in Column A matches any value in Column B
-                If cellA.Value = cellB.Value Then
-                    foundDuplicate = True
-                    Exit For ' Exit the inner loop once a match is found
-                End If
-            Next cellB
-            
-            ' Check if the value in Column A is unique within Column A
-            If WorksheetFunction.CountIf(rngA, cellA.Value) = 1 Then
-                ' Apply conditional formatting to highlight duplicates in Column A that exist in Column B
-                If foundDuplicate Then
-                    cellA.Interior.Color = RGB(144, 238, 144) ' Light green
-                End If
+            ' Check if the value in Column A exists in the dictionary (i.e., in Column B)
+            If dictB.Exists(cellA.Value) Then
+                ' Apply conditional formatting to highlight duplicates in Column A
+                cellA.Interior.Color = RGB(144, 238, 144) ' Light green
             End If
         End If
     Next cellA
