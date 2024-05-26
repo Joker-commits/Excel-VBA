@@ -1,45 +1,32 @@
 Sub HighlightDuplicatesWithVBA()
     Dim ws As Worksheet
-    Dim rngA As Range, rngB As Range
+    Dim rng As Range
     Dim cell As Range
-    Dim selectedRange As Range
-    Dim countA As Long, countB As Long
     
     ' Set the worksheet
     Set ws = ThisWorkbook.ActiveSheet ' Change to the desired worksheet if needed
     
     ' Prompt the user to select the range for comparison
     On Error Resume Next
-    Set selectedRange = Application.InputBox("Select the range for comparison", Type:=8)
+    Set rng = Application.InputBox("Select the range for comparison", Type:=8)
     On Error GoTo 0
     
     ' Check if a range is selected
-    If Not selectedRange Is Nothing Then
-        ' Define the range for Column A and Column B based on the selected range
-        Set rngA = selectedRange.Columns(1)
-        Set rngB = selectedRange.Offset(0, 1).Columns(1)
+    If Not rng Is Nothing Then
+        ' Clear existing conditional formatting
+        rng.FormatConditions.Delete
         
-        ' Check if both ranges are not empty
-        If Not rngA Is Nothing And Not rngB Is Nothing Then
-            ' Clear existing conditional formatting
-            rngA.FormatConditions.Delete
-            
-            ' Loop through each cell in Column A to count occurrences
-            For Each cell In rngA
-                If Not IsEmpty(cell) Then
-                    countA = Application.WorksheetFunction.CountIf(rngA, cell.Value)
-                    countB = Application.WorksheetFunction.CountIf(rngB, cell.Value)
-                    
-                    ' Check if the value doesn't repeat in the same column
-                    If countA = 1 Or countB = 1 Then
-                        ' Apply conditional formatting to highlight the cell with light green color
-                        cell.Interior.Color = RGB(144, 238, 144) ' Light green
-                    End If
+        ' Loop through each cell in the selected range
+        For Each cell In rng
+            ' Check if the cell is not empty
+            If Not IsEmpty(cell) Then
+                ' Check if the value occurs more than once in the selected range
+                If Application.CountIf(rng, cell.Value) > 1 Then
+                    ' Apply conditional formatting to highlight the cell with light green color
+                    cell.Interior.Color = RGB(144, 238, 144) ' Light green
                 End If
-            Next cell
-        Else
-            MsgBox "Invalid range selection. Please select a range that includes at least two adjacent columns.", vbExclamation
-        End If
+            End If
+        Next cell
     Else
         MsgBox "No range selected.", vbExclamation
     End If
