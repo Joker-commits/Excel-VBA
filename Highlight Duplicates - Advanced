@@ -18,21 +18,13 @@ Sub HighlightDuplicatesWithVBA()
         Set rngA = ws.Range(selectedRange.Address)
         Set rngB = ws.Range(selectedRange.Offset(0, 1).Address)
         
-        ' Clear existing conditional formatting
-        rngA.FormatConditions.Delete
-        
-        ' Loop through each cell in Column A
-        For Each cell In rngA
-            ' Check if the value in Column A exists in Column B
-            If Not IsError(Application.Match(cell.Value, rngB, 0)) Then
-                ' Check if the value doesn't repeat in the same column
-                If WorksheetFunction.CountIf(rngA, cell.Value) = 1 Or WorksheetFunction.CountIf(rngB, cell.Value) = 1 Then
-                    ' Apply conditional formatting to highlight the cell with light green color
-                    cell.Interior.Color = RGB(144, 238, 144) ' Light green
-                End If
-            End If
-        Next cell
-    Else
-        MsgBox "No range selected.", vbExclamation
-    End If
-End Sub
+        ' Check if both ranges are not empty
+        If Not rngA Is Nothing And Not rngB Is Nothing Then
+            ' Clear existing conditional formatting
+            rngA.FormatConditions.Delete
+            
+            ' Loop through each cell in Column A
+            For Each cell In rngA
+                ' Check if the value in Column A exists in Column B
+                If Not IsError(Application.Match(cell.Value, rngB, 0)) Then
+                    ' Check if the⬤
