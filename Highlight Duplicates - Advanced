@@ -3,7 +3,6 @@ Sub HighlightDuplicatesWithVBA()
     Dim rngA As Range, rngB As Range
     Dim cell As Range
     Dim selectedRange As Range
-    Dim lastRow As Long
     
     ' Set the worksheet
     Set ws = ThisWorkbook.ActiveSheet ' Change to the desired worksheet if needed
@@ -15,7 +14,14 @@ Sub HighlightDuplicatesWithVBA()
     
     ' Check if a range is selected
     If Not selectedRange Is Nothing Then
-        ' Find the last row in the selected range
+        ' Check if the selected range contains multiple columns
+        If selectedRange.Columns.Count > 1 Then
+            MsgBox "Please select a single column range.", vbExclamation
+            Exit Sub
+        End If
+        
+        ' Find the last row in the selected column
+        Dim lastRow As Long
         lastRow = ws.Cells(ws.Rows.Count, selectedRange.Column).End(xlUp).Row
         
         ' Define the range for Column A and Column B based on the selected range and last row
