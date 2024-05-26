@@ -19,7 +19,7 @@ Function XLookupWithDuplicates(lookupValue As Variant, lookupRange As Range, ret
         
         ' Handle duplicates
         If duplicateCount > 1 Then
-            XLookupWithDuplicates = "Duplicate " & (firstOccurrence - 1) + Application.WorksheetFunction.RandBetween(1, duplicateCount) & " found in cell " & lookupRange(firstOccurrence).Address
+            XLookupWithDuplicates = "Duplicate found in cell " & lookupRange(firstOccurrence).Address
         Else
             ' No duplicates, return initial lookup result
             XLookupWithDuplicates = lookupResult
