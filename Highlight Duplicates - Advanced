@@ -1,21 +1,27 @@
-Sub HighlightDuplicates()
+Sub HighlightDuplicatesWithVBA()
+    Dim ws As Worksheet
+    Dim rngA As Range, rngB As Range
     Dim cell As Range
-    Dim rngA As Range, rngB As Range, selectedRange As Range
     
-    ' Prompt the user to select the range for Column A
-    On Error Resume Next
-    Set rngA = Application.InputBox("Select the range for Column A", Type:=8)
-    On Error GoTo 0
+    ' Set the worksheet
+    Set ws = ThisWorkbook.Sheets("Sheet1") ' Change "Sheet1" to your sheet name
     
-    ' Prompt the user to select the range for Column B
-    If Not rngA Is Nothing Then
-        On Error Resume Next
-        Set rngB = Application.InputBox("Select the range for Column B", Type:=8)
-        On Error GoTo 0
-    End If
+    ' Define the range for Column A and Column B
+    Set rngA = ws.Range("A1:A" & ws.Cells(ws.Rows.Count, "A").End(xlUp).Row)
+    Set rngB = ws.Range("B1:B" & ws.Cells(ws.Rows.Count, "B").End(xlUp).Row)
     
-    ' Check if both ranges are selected
-    If Not rngA Is Nothing And Not rngB Is Nothing Then
-        ' Loop through each cell in Column A
-        For Each cell In rngA
-            ' Check if the value in⬤
+    ' Clear existing conditional formatting
+    rngA.FormatConditions.Delete
+    
+    ' Loop through each cell in Column A
+    For Each cell In rngA
+        ' Check if the value in Column A exists in Column B
+        If Not IsError(Application.Match(cell.Value, rngB, 0)) Then
+            ' Check if the value doesn't repeat in the same column
+            If WorksheetFunction.CountIf(rngA, cell.Value) = 1 Or WorksheetFunction.CountIf(rngB, cell.Value) = 1 Then
+                ' Apply conditional formatting to highlight the cell with light green color
+                cell.Interior.Color = RGB(144, 238, 144) ' Light green
+            End If
+        End If
+    Next cell
+End Sub
