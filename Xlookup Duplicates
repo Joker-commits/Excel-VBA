@@ -9,13 +9,13 @@ Function XLookupWithDuplicates(lookupValue As Variant, lookupRange As Range, ret
     matchingCells = ""
     
     ' Check for duplicates in the lookup value column
-    duplicateCount = Application.CountIf(lookupRange, lookupValue)
+    duplicateCount = Application.CountIf(lookupRange.Columns(1), lookupValue)
     
     ' Find first occurrence
-    firstOccurrence = Application.Match(lookupValue, lookupRange, 0)
+    firstOccurrence = Application.Match(lookupValue, lookupRange.Columns(1), 0)
     
-    ' Loop through each cell in the lookup range
-    For Each cell In lookupRange
+    ' Loop through each cell in the lookup value column
+    For Each cell In lookupRange.Columns(1).Cells
         ' If the cell value matches the lookup value, append its address to the string
         If cell.Value = lookupValue Then
             matchingCells = matchingCells & cell.Address & ", "
